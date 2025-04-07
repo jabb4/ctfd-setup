@@ -1,11 +1,11 @@
 services:
   ctfd:
     container_name: ctfd
-    image: ctfd/ctfd:latest
+    build: ./CTFd
+    user: root
     restart: unless-stopped
     ports:
-      - 8000:8000
-    entrypoint: ["/opt/CTFd/CTFd/docker-entrypoint.sh"] 
+      - "8000:8000"
     environment:
       - UPLOAD_FOLDER=/var/uploads
       - DATABASE_URL=mysql+pymysql://ctfd:ctfd@db/ctfd
@@ -16,22 +16,22 @@ services:
       - ERROR_LOG=-
       - REVERSE_PROXY=true
     volumes:
-      - ./config/themes:/opt/CTFd/CTFd/themes
-      - ./config/plugins:/opt/CTFd/CTFd/plugins
       - .data/CTFd/logs:/var/log/CTFd
       - .data/CTFd/uploads:/var/uploads
+      - ./CTFd:/opt/CTFd:ro
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - db
     networks:
         default:
         internal:
+
   nginx:
     container_name: ctfd-proxy
     image: nginx:stable
     restart: unless-stopped
     volumes:
-      - ./config/nginx/http.conf:/etc/nginx/nginx.conf
+      - ./CTFd/conf/nginx/http.conf:/etc/nginx/nginx.conf
     ports:
       - 80:80
     depends_on:
