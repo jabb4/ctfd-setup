@@ -1,93 +1,111 @@
-"""
-This module defines the database models for the containers plugin in CTFd.
-It includes models for container challenges, container information, and container settings.
-"""
-
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
 from CTFd.models import db
 from CTFd.models import Challenges
 
-class ContainerChallengeModel(Challenges):
-    """
-    Represents a container-based challenge in CTFd.
 
-    This model extends the base Challenges model with additional fields
-    specific to container challenges.
-    """
+class ContainerChallengeModel(Challenges):
     __mapper_args__ = {"polymorphic_identity": "container"}
     id = db.Column(
         db.Integer, db.ForeignKey("challenges.id", ondelete="CASCADE"), primary_key=True
-    )  # Unique identifier for each container challenge.
-    image = db.Column(db.Text)  # Docker image used for the container challenge.
-    port = db.Column(db.Integer)  # Port number the container listens on.
-    command = db.Column(db.Text, default="")  # Command to run inside the container.
-    volumes = db.Column(db.Text, default="")  # Volume mappings for the container.
+    )
+    image = db.Column(db.Text)
+    port = db.Column(db.Integer)
+    command = db.Column(db.Text, default="")
+    volumes = db.Column(db.Text, default="")
+    connection_type = db.Column(db.Text)
 
     # Dynamic challenge properties
-    initial = db.Column(db.Integer, default=0)  # Initial point value for the challenge.
-    minimum = db.Column(db.Integer, default=0)  # Minimum point value after decay.
-    decay = db.Column(db.Integer, default=0)  # Rate of point decay over time.
+    initial = db.Column(db.Integer, default=0)
+    minimum = db.Column(db.Integer, default=0)
+    decay = db.Column(db.Integer, default=0)
+
+    # Random flag properties
+    flag_mode = db.Column(db.Text, default="static")
+    random_flag_length = db.Column(db.Integer, default=10)
+    flag_prefix = db.Column(db.Text, default="CTF{")
+    flag_suffix = db.Column(db.Text, default="}")
 
     def __init__(self, *args, **kwargs):
-        """
-        Initialize a new ContainerChallengeModel instance.
-
-        Args:
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
-        """
         super(ContainerChallengeModel, self).__init__(**kwargs)
-        self.value = kwargs["initial"]  # Set the initial point value from the given arguments.
+        self.value = kwargs["initial"]
+
 
 class ContainerInfoModel(db.Model):
-    """
-    Represents information about a running container instance.
-
-    This model stores details about container instances created for challenges,
-    including which user or team the container belongs to.
-    """
     __mapper_args__ = {"polymorphic_identity": "container_info"}
-    container_id = db.Column(db.String(512), primary_key=True)  # Unique container ID.
-    challenge_id = db.Column(
-        db.Integer, db.ForeignKey("challenges.id", ondelete="CASCADE")
-    )  # Associated challenge ID for the container.
-    user_id = db.Column(
-        db.Integer, db.ForeignKey("users.id", ondelete="CASCADE")
-    )  # ID of the user who owns the container.
-    team_id = db.Column(
-        db.Integer, db.ForeignKey("teams.id", ondelete="CASCADE")
-    )  # ID of the team who owns the container.
-    port = db.Column(db.Integer)  # Port number for the container instance.
-    timestamp = db.Column(db.Integer)  # Creation timestamp of the container.
-    expires = db.Column(db.Integer)  # Expiration timestamp for the container.
+    container_id = db.Column(db.String(512), primary_key=True)
+    challenge_id = db.Column(db.Integer, db.ForeignKey("challenges.id", ondelete="CASCADE"), index=True)
+    team_id = db.Column(db.Integer, db.ForeignKey("teams.id", ondelete="CASCADE"), index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    port = db.Column(db.Integer)
+    timestamp = db.Column(db.Integer)
+    expires = db.Column(db.Integer)
+    flag = db.Column(db.Text, default="")
+    
+    team = relationship("Teams", foreign_keys=[team_id])
+    user = relationship("Users", foreign_keys=[user_id])
 
-    # Relationships to link container to user, team, and challenge.
-    user = db.relationship("Users", foreign_keys=[user_id])
-    team = db.relationship("Teams", foreign_keys=[team_id])
-    challenge = db.relationship(ContainerChallengeModel,
-                                foreign_keys=[challenge_id])
+    challenge = relationship(ContainerChallengeModel, foreign_keys=[challenge_id])
+
 
 class ContainerSettingsModel(db.Model):
-    """
-    Represents configuration settings for the containers plugin.
+    __mapper_args__ = {"polymorphic_identity": "container_settings"}
+    key = db.Column(db.String(512), primary_key=True)
+    value = db.Column(db.Text)
 
-    This model stores key-value pairs for various settings related to
-    container management in the CTFd platform.
-    """
-    key = db.Column(db.String(512), primary_key=True)  # Setting key.
-    value = db.Column(db.Text)  # Setting value.
 
-    @classmethod
-    def apply_default_config(cls, key, value):
-        """
-        Set the default configuration for a container setting.
+class ContainerFlagModel(db.Model):
+    __mapper_args__ = {"polymorphic_identity": "container_flags"}
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-        Args:
-            key (str): The setting key.
-            value (str): The setting value.
-        """
-        # If the setting is not already in the database, add it as a new entry.
-        if not cls.query.filter_by(key=key).first():
-            db.session.add(cls(key=key, value=value))
+    challenge_id = db.Column(
+        db.Integer, db.ForeignKey("challenges.id", ondelete="CASCADE")
+    )
+    container_id = db.Column(
+        db.String(512),
+        db.ForeignKey("container_info_model.container_id"),
+        nullable=True,
+    )
+    flag = db.Column(db.Text)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"))
+    team_id = db.Column(db.Integer, db.ForeignKey("teams.id", ondelete="CASCADE"))
+    used = db.Column(db.Boolean, default=False)
+
+    container = relationship(ContainerInfoModel, foreign_keys=[container_id])
+    challenge = relationship(ContainerChallengeModel, foreign_keys=[challenge_id])
+    user = relationship("Users", foreign_keys=[user_id])
+    team = relationship("Teams", foreign_keys=[team_id])
+
+
+class ContainerCheatLog(db.Model):
+    __mapper_args__ = {"polymorphic_identity": "container_cheat_logs"}
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    # The reused flag
+    reused_flag = db.Column(db.Text)
+
+    # Which challenge was it from?
+    challenge_id = db.Column(
+        db.Integer, db.ForeignKey("challenges.id", ondelete="CASCADE")
+    )
+    # We'll store the relevant relationships if needed
+    challenge = db.relationship("ContainerChallengeModel", foreign_keys=[challenge_id])
+
+    # Original owners
+    original_team_id = db.Column(db.Integer, db.ForeignKey("teams.id"), nullable=True)
+    original_user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+
+    # The second submitter who tried reusing the flag
+    second_team_id = db.Column(db.Integer, db.ForeignKey("teams.id"), nullable=True)
+    second_user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+
+    # Time of the cheating attempt
+    timestamp = db.Column(db.Integer)
+
+    # Relationship to help retrieve team/user if needed
+    original_team = db.relationship("Teams", foreign_keys=[original_team_id])
+    original_user = db.relationship("Users", foreign_keys=[original_user_id])
+    second_team = db.relationship("Teams", foreign_keys=[second_team_id])
+    second_user = db.relationship("Users", foreign_keys=[second_user_id])

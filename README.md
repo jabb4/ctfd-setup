@@ -9,4 +9,4 @@
 ## Thanks to
 - [CTFd](https://github.com/CTFd/CTFd) - Platform
 - [ctfd-neon-theme](https://github.com/chainflag/ctfd-neon-theme) - Theme insparation
-- [CTFdDockerContainersPlugin](https://github.com/Bigyls/CTFdDockerContainersPlugin) - Plugin
+- [CTFd-Docker-Plugin](https://github.com/phannhat17/CTFd-Docker-Plugin) - Plugin
