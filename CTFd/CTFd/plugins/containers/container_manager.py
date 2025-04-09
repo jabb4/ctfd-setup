@@ -250,6 +250,11 @@ class ContainerManager:
 
     @run_command
     def get_container_port(self, container_id: str) -> "str|None":
+        # These prints are apperently nessesary to get the port or something wierd
+        print(self.client.containers.get(container_id))
+        print(self.client.containers.get(container_id).ports)
+        print(self.client.containers.get(container_id).ports.values())
+        
         try:
             for port in list(self.client.containers.get(container_id).ports.values()):
                 if port is not None:
