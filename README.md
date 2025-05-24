@@ -1,6 +1,6 @@
 # ctfd-setup
 
-## Configure Docker:
+## Configure container challenges:
 1. Go to /containers/admin/settings and set all settings.
    1. Set base-url to: unix://var/run/docker.sock (If you want to deploy continers to same host as ctfd is hosted at)
    2. Hostname for Docker Host: The adress which the users will connect to the container with.
@@ -11,13 +11,12 @@
 
 
 ## Themes
-- To add a theme just drop it in to CTFd/themes and restart the container
+- To add a theme just drop it in to themes and rebuild the container
 
 ## Add Plugins
-1. Drop it in to CTFd/plugins
-2. Add 
+1. Drop it in to plugins
+2. Add the pip requirements to plugins/requirements.txt
 3. rebuild container
-- 
 
 
 ## Thanks to
