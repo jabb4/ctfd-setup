@@ -111,7 +111,6 @@ class ContainerManager:
             # Shut down the scheduler when exiting the app
             atexit.register(lambda: self.expiration_scheduler.shutdown())
 
-    # TODO: Fix this cause it doesn't work
     @staticmethod
     def run_command(func):
         def wrapper_run_command(self, *args, **kwargs):
@@ -252,6 +251,7 @@ class ContainerManager:
     def get_container_port(self, container_id: str) -> "str|None":
         # Force a fresh fetch of all its attributes
         self.client.containers.get(container_id).reload()
+        time.sleep(0.1)  # Give Docker a moment to update the container's attributes
         
         try:
             for port in list(self.client.containers.get(container_id).ports.values()):
