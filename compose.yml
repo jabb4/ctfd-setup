@@ -1,7 +1,7 @@
 services:
   ctfd:
     container_name: ctfd
-    build: ./CTFd
+    build: .
     user: root
     restart: unless-stopped
     ports:
@@ -18,7 +18,6 @@ services:
     volumes:
       - .data/CTFd/logs:/var/log/CTFd
       - .data/CTFd/uploads:/var/uploads
-      - ./CTFd:/opt/CTFd:ro
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - db
@@ -32,7 +31,7 @@ services:
     image: nginx:stable
     restart: unless-stopped
     volumes:
-      - ./CTFd/conf/nginx/http.conf:/etc/nginx/nginx.conf
+      - ./config/nginx/http.conf:/etc/nginx/nginx.conf
     ports:
       - 80:80
     depends_on:
