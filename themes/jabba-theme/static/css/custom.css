@@ -1,0 +1,49 @@
+:root {
+  --primary: #28a745;
+  --darker: #104e1e;
+  --lighter: #41d564;
+
+}
+
+/* Links */
+.nav-link {
+  color: var(--primary) !important;
+}
+a {
+  color: var(--primary) !important;
+}
+a:hover {
+  color: var(--lighter) !important;
+}
+
+/* Buttons */
+.btn-primary, .challenge-submit, .nav-link.active {
+  background-color: var(--primary) !important;
+  border: var(--lighter) !important;
+  color: white !important;
+}
+.btn-primary:hover, .challenge-submit:hover {
+  background-color: var(--darker) !important;
+  border: var(--primary) !important;
+  color: white !important;
+}
+
+/* Search bars and drop down menus */
+.form-select:focus, .form-control:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 0.2rem var(--darker) !important;
+}
+
+/* Alrets */
+.alert-primary {
+  background-color: var(--darker) !important;
+  border: var(--lighter) !important;
+  color: var(--lighter) !important;
+}
+
+/* Other */
+/* Captian badge */
+.badge.bg-primary {
+  background-color: var(--primary) !important;
+  color: white !important;
+}
