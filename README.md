@@ -21,4 +21,4 @@
 
 ## Thanks to
 - [CTFd](https://github.com/CTFd/CTFd) - Platform
-- [CTFd-Docker-Plugin](https://github.com/phannhat17/CTFd-Docker-Plugin) - Plugin
+- [CTFd-Docker-Plugin](https://github.com/jabb4/CTFd-Docker-Plugin) - Plugin
