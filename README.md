@@ -9,14 +9,16 @@
    5. Maximum per-container memory usage (in MB): Depends on recources but 512 should be good i guess.
    6. Maximum per-container CPUs:Depends on recources but 0.5 should be good i guess.
 
+## Custom css
+This is if you want to add your custom css file to any themes base.html
+1. create a new dir in custom-css dir with the name of theme you want to add the custom css to
+2. add a css file called custom.css to that new dir with the css you want
 
 ## Themes
-- To add a theme just drop it in to themes and rebuild the container
+- In the Dockerfile, add a git clone to the themes file
 
 ## Add Plugins
-1. Drop it in to plugins
-2. Add the pip requirements to plugins/requirements.txt
-3. rebuild container
+- In the Dockerfile, add a git clone and pip install
 
 
 ## Thanks to

@@ -17,17 +17,22 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 
 
-# install CTFd and dependencies
+# Install CTFd and dependencies
 RUN git clone https://github.com/CTFd/CTFd.git .
-RUN [ -f /opt/CTFd/docker-entrypoint.sh ] || (echo "NOT FOUND" && exit 1)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# install plugins and thier dependencies
-COPY ./plugins /opt/CTFd/CTFd/plugins
-RUN pip install --no-cache-dir -r CTFd/plugins/requirements.txt
+# Install plugins and thier dependencies
+RUN git clone https://github.com/jabb4/CTFd-Docker-Plugin.git CTFd/plugins/CTFd-Docker-Plugin
+RUN pip install --no-cache-dir -r CTFd/plugins/CTFd-Docker-Plugin/requirements.txt
 
-# install themes
-COPY ./themes /opt/CTFd/CTFd/themes
+# Install themes
+# RUN git clone ....... CTFd/themes
+
+# Apply custom css
+COPY custom-css CTFd/custom-css
+RUN chmod +x CTFd/custom-css/apply.sh
+WORKDIR /opt/CTFd/CTFd/custom-css
+RUN ./apply.sh
 
 
 
