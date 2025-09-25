@@ -1,4 +1,4 @@
-FROM python:3.11-slim-bookworm AS build
+FROM python:3.12-slim-bookworm AS build
 
 WORKDIR /opt/CTFd
 
@@ -37,7 +37,7 @@ RUN ./apply.sh
 
 
 
-FROM python:3.11-slim-bookworm AS release
+FROM python:3.12-slim-bookworm AS release
 WORKDIR /opt/CTFd
 
 # hadolint ignore=DL3008
