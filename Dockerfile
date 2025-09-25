@@ -22,8 +22,8 @@ RUN git clone https://github.com/CTFd/CTFd.git .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install plugins and thier dependencies
-RUN git clone https://github.com/jabb4/CTFd-Docker-Plugin.git CTFd/plugins/CTFd-Docker-Plugin
-RUN pip install --no-cache-dir -r CTFd/plugins/CTFd-Docker-Plugin/requirements.txt
+# RUN git clone https://github.com/jabb4/CTFd-Docker-Plugin.git CTFd/plugins/CTFd-Docker-Plugin
+# RUN pip install --no-cache-dir -r CTFd/plugins/CTFd-Docker-Plugin/requirements.txt
 
 # Install themes
 # RUN git clone ....... CTFd/themes
